@@ -16,6 +16,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+
+
     <ScrollView
         android:id="@+id/svMain"
         android:layout_width="wrap_content"
@@ -27,7 +29,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tbAddPlace">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="400dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/main_content_padding">
 
@@ -48,7 +50,8 @@
                     android:inputType="textCapWords"
                     android:textColor="@color/primary_text_color"
                     android:textColorHint="@color/secondary_text_color"
-                    android:textSize="@dimen/edit_text_text_size" />
+                    android:textSize="@dimen/edit_text_text_size"
+                    />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -88,6 +91,8 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/edit_text_hint_date"
                     android:inputType="text"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
                     android:textColor="@color/primary_text_color"
                     android:textColorHint="@color/secondary_text_color"
                     android:textSize="@dimen/edit_text_text_size"/>
