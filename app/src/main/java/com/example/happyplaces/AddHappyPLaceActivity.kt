@@ -1,21 +1,29 @@
 package com.example.happyplaces
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.View
+import android.widget.Gallery
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
 import com.example.happyplaces.databinding.ActivityAddHappyPlaceBinding
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -64,36 +72,97 @@ class AddHappyPLaceActivity : AppCompatActivity(),View.OnClickListener{
                 pictureDialog.setItems(pictureItems){
                         _, which ->
                 when(which){
-                    0 ->choosePhotoFromGallery()
-                    1 -> Toast.makeText(this,"Camera Section is coming soon",Toast.LENGTH_SHORT).show()
+                    0 -> choosePhotoFromGallery()
+                    1 ->takePhotoFromCamera()
                 }
                 }
                 pictureDialog.show()
             }
         }
     }
-    private fun choosePhotoFromGallery(){
-        Dexter.withActivity(this).withPermissions(
-            android.Manifest.permission.READ_EXTERNAL_STORAGE,
-            android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-        ).withListener(object : MultiplePermissionsListener {
-            override fun onPermissionsChecked(report : MultiplePermissionsReport)
-
-            {
-                if(report.areAllPermissionsGranted())
-                {
-                Toast.makeText(this@AddHappyPLaceActivity,
-                    "READ/WRITE permissions are granted, Now you can use photos from the Gallery",Toast.LENGTH_SHORT).show()
-                 }
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == GALLERY) {
+                if (data != null) {
+                    val contentUri = data.data
+                    try {
+                        val selectedImageBitmap =
+                            MediaStore.Images.Media.getBitmap(this.contentResolver, contentUri)
+                        binding?.ivPlaceImage?.setImageBitmap(selectedImageBitmap)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        Toast.makeText(
+                            this,
+                            "Failed to load the image from gallery",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            } else if (requestCode == CAMERA) {
+                val thumbnail: Bitmap = data!!.extras!!.get("data") as Bitmap
+                binding?.ivPlaceImage?.setImageBitmap(thumbnail)
             }
-            override fun onPermissionRationaleShouldBeShown(permissions:MutableList<PermissionRequest>,token: PermissionToken)
+        }
+    }
+
+    private fun takePhotoFromCamera(){
+
+        Dexter.withActivity(this).withPermissions(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA
+        ).withListener(object : MultiplePermissionsListener {
+
+            override fun onPermissionsChecked(
+                report : MultiplePermissionsReport?)
+            {
+                if(report!!.areAllPermissionsGranted())
+                {
+                    val galleryIntent=Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    startActivityForResult(galleryIntent,CAMERA)
+                }
+
+            }
+
+            override fun onPermissionRationaleShouldBeShown(permissions:MutableList<PermissionRequest>?,token: PermissionToken?)
             {
                 rationalDialogForPermissions()
+
             }
-        }).onSameThread().check();
+
+        }).onSameThread().check()
+
+    }
+
+     private fun choosePhotoFromGallery(){
+        Dexter.withActivity(this).withPermissions(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ).withListener(object : MultiplePermissionsListener {
+
+
+            override fun onPermissionsChecked(
+                report : MultiplePermissionsReport?)
+            {
+                if(report!!.areAllPermissionsGranted())
+                {
+                val galleryIntent=Intent(Intent.ACTION_PICK,MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+                    startActivityForResult(galleryIntent,GALLERY)
+                }
+
+            }
+
+            override fun onPermissionRationaleShouldBeShown(permissions:MutableList<PermissionRequest>?,token: PermissionToken?)
+            {
+                rationalDialogForPermissions()
+
+            }
+
+        }).onSameThread().check()
     }
     fun rationalDialogForPermissions(){
-        AlertDialog.Builder(this).setMessage(
+        AlertDialog.Builder(this).setMessage(""+
             "It looks like you have denied permissions, which are required for this feature." +
                     " It can be enabled under Application Setting")
             .setPositiveButton("GOTO SETTINGS")
@@ -117,5 +186,9 @@ class AddHappyPLaceActivity : AppCompatActivity(),View.OnClickListener{
         var format = "dd.MM.yyyy"
         var sdf = SimpleDateFormat(format, Locale.getDefault())
         binding?.etDate?.setText(sdf.format(cal.time).toString())
+    }
+    companion object{
+        private const val GALLERY=1
+        private const val CAMERA=2
     }
 }

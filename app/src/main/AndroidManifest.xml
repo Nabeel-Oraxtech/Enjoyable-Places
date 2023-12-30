@@ -6,12 +6,19 @@
 <!--    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}-->
 <!--    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}-->
 <!--    new String[]{Manifest.permission.CAMERA}-->
-    <permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-        tools:ignore="ReservedSystemPermission" />
-    <permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        tools:ignore="ReservedSystemPermission" />
-    <permission android:name="android.permission.CAMERA"
-        tools:ignore="ReservedSystemPermission" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage"/>
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage"/>
+    <uses-permission
+        android:name="android.permission.CAMERA"
+        tools:ignore="ScopedStorage"/>
 
 
 
