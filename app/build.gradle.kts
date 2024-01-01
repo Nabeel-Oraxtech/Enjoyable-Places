@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.com.intellij.diagnostic.ImplementationConflictException
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -46,6 +48,10 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("com.google.ar.sceneform:filament-android:1.17.1")
     implementation("com.karumi:dexter:6.0.1")
+    //debugImplementation("im.dino:dbinspector:3.4.1@aar")
+    debugImplementation("com.infinum.dbinspector:dbinspector:5.4.9")
+    releaseImplementation ("com.infinum.dbinspector:dbinspector-no-op:5.4.9")
+    implementation("de.hdodenhof:circleimageview:3.0.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
