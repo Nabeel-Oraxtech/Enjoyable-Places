@@ -1,3 +1,4 @@
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -34,8 +35,8 @@ class DatabaseHandler(context: Context) :
                     + KEY_DESCRIPTION + " TEXT,"
                     + KEY_DATE + " TEXT,"
                     + KEY_LOCATION + " TEXT,"
-                    + KEY_LATITUDE + " REAL,"
-                    + KEY_LONGITUDE + " REAL)")
+                    + KEY_LATITUDE + " TEXT,"
+                    + KEY_LONGITUDE + " TEXT)")
         db?.execSQL(CREATE_HAPPY_PLACE_TABLE)
     }
 
@@ -59,6 +60,7 @@ class DatabaseHandler(context: Context) :
         db.close()
         return result
     }
+    @SuppressLint("Range")
     fun addHappyPlaceList():ArrayList<HappyPlaceModel> {
         val happyPlaceList=ArrayList<HappyPlaceModel>()
         val selectQuery="SELECT * FROM $TABLE_HAPPY_PLACE"

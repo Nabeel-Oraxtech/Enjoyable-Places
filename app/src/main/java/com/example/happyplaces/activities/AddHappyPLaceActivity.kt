@@ -113,14 +113,14 @@ class AddHappyPLaceActivity : AppCompatActivity(),View.OnClickListener{
                            saveImageToInternalStorage.toString(),
                            binding?.etDescription?.text.toString(),
                            binding?.etDate?.text.toString(),
-                           binding?.etLocation.toString(),
+                           binding?.etLocation?.text.toString(),
                            mLatitude,
                            mLongitude
                        )
                         val dbHandler=DatabaseHandler(this)
                         val addHappyPlace=dbHandler.addHappyPlace(happyPlaceModel)
                         if(addHappyPlace >0){
-                            Toast.makeText(this,"Data has been added Successfully",Toast.LENGTH_LONG).show()
+                            setResult(Activity.RESULT_OK)
                             finish()
                         }
 
