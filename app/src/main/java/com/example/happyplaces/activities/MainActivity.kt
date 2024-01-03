@@ -9,11 +9,13 @@ import android.util.Log
 import android.view.View
 import android.widget.Adapter
 import androidx.activity.result.ActivityResult
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.happyplaces.adapters.HappyPlacesAdapter
 import com.example.happyplaces.databinding.ActivityMainBinding
 import com.example.happyplaces.models.HappyPlaceModel
+import com.happyplaces.utils.SwipeToDeleteCallback
 import pl.kitek.rvswipetodelete.SwipeToEditCallback
 
 
@@ -49,11 +51,28 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        val editSwipeHandler= object : SwipeToEditCallback(this){
+        var editSwipeHandler= object : SwipeToEditCallback(this){
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val adapter=binding?.rvHappyPlacesList?.adapter as HappyPlacesAdapter
+                adapter.notifyEditItem(this@MainActivity,viewHolder.adapterPosition,
+                    ADD_PLACE_ACTIVITY_REQUEST_CODE)
+            }
+        }
+        val editItemTouchHelper=ItemTouchHelper(editSwipeHandler)
+        editItemTouchHelper.attachToRecyclerView(binding?.rvHappyPlacesList)
+        var deleteSwipeHandler= object :SwipeToDeleteCallback(this){
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+                val adapter=binding?.rvHappyPlacesList?.adapter as HappyPlacesAdapter
+                adapter.removeAt(viewHolder.adapterPosition)
+
+                getHappyPlaceListFromLocalDB()
 
             }
         }
+        val deleteItemTouchHelper=ItemTouchHelper(deleteSwipeHandler)
+        deleteItemTouchHelper.attachToRecyclerView(binding?.rvHappyPlacesList)
     }
 
     private fun getHappyPlaceListFromLocalDB(){
